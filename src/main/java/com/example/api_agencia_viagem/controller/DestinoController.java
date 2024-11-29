@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.api_agencia_viagem.entity.Destino;
+import com.example.api_agencia_viagem.dominio.dto.Destino;
 import com.example.api_agencia_viagem.service.DestinoService;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.example.api_agencia_viagem.entity;
+package com.example.api_agencia_viagem.dominio.dto;
 
 public class Destino {
     private Long id;

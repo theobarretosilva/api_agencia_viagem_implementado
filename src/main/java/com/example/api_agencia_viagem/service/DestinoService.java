@@ -2,7 +2,7 @@ package com.example.api_agencia_viagem.service;
 
 import java.util.List;
 
-import com.example.api_agencia_viagem.entity.Destino;
+import com.example.api_agencia_viagem.dominio.dto.Destino;
 
 public interface DestinoService {
     Destino cadastrarDestino(Destino destino);

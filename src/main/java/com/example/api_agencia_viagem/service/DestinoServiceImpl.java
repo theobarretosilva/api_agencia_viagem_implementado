@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.api_agencia_viagem.entity.Destino;
+import com.example.api_agencia_viagem.dominio.dto.Destino;
 
 @Service
 public class DestinoServiceImpl implements DestinoService {
