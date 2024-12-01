@@ -1,6 +1,6 @@
 package com.example.api_agencia_viagem.dominio.dto;
 
-public class Destino {
+public class DestinoDTO {
     private Long id;
     private String nome;
     private String localizacao;

@@ -6,28 +6,28 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.api_agencia_viagem.dominio.dto.Destino;
+import com.example.api_agencia_viagem.dominio.dto.DestinoDTO;
 
 @Service
 public class DestinoServiceImpl implements DestinoService {
-    private List<Destino> destinos = new ArrayList<>();
+    private List<DestinoDTO> destinos = new ArrayList<>();
 
     @Override
-    public Destino cadastrarDestino(Destino destino) {
+    public DestinoDTO cadastrarDestino(DestinoDTO destino) {
         destinos.add(destino);
         return destino;
     }
 
     @Override
-    public List<Destino> listarDestinos() {
+    public List<DestinoDTO> listarDestinos() {
         return destinos;
     }
 
     @Override
-    public List<Destino> pesquisarDestinos(String nome, String localizacao) {
-        List<Destino> resultados = new ArrayList<>();
+    public List<DestinoDTO> pesquisarDestinos(String nome, String localizacao) {
+        List<DestinoDTO> resultados = new ArrayList<>();
 
-        for (Destino destino : destinos) {
+        for (DestinoDTO destino : destinos) {
             boolean nomeMatch = nome != null && destino.getNome().toLowerCase().contains(nome.toLowerCase());
             boolean localizacaoMatch = localizacao != null && destino.getLocalizacao().toLowerCase().contains(localizacao.toLowerCase());
 
@@ -40,14 +40,14 @@ public class DestinoServiceImpl implements DestinoService {
     }
 
     @Override
-    public Destino obterDetalhes(Long id) {
-        Optional<Destino> destino = destinos.stream().filter(d -> d.getId().equals(id)).findFirst();
+    public DestinoDTO obterDetalhes(Long id) {
+        Optional<DestinoDTO> destino = destinos.stream().filter(d -> d.getId().equals(id)).findFirst();
         return destino.orElse(null);
     }
 
     @Override
-    public Destino avaliarDestino(Long id, int nota) {
-        Destino destino = obterDetalhes(id);
+    public DestinoDTO avaliarDestino(Long id, int nota) {
+        DestinoDTO destino = obterDetalhes(id);
         if (destino == null) {
             return null;
         }

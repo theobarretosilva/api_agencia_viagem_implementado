@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.api_agencia_viagem.dominio.dto.Destino;
+import com.example.api_agencia_viagem.dominio.dto.DestinoDTO;
 import com.example.api_agencia_viagem.service.DestinoService;
 
 @RestController
@@ -26,29 +26,29 @@ public class DestinoController {
     private DestinoService destinoService;
 
     @PostMapping
-    public ResponseEntity<Destino> createDestino(@RequestBody Destino destino) {
-        Destino novoDestino = destinoService.cadastrarDestino(destino);
+    public ResponseEntity<DestinoDTO> createDestino(@RequestBody DestinoDTO destino) {
+        DestinoDTO novoDestino = destinoService.cadastrarDestino(destino);
         return new ResponseEntity<>(novoDestino, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Destino>> getAllDestinos() {
-        List<Destino> destinos = destinoService.listarDestinos();
+    public ResponseEntity<List<DestinoDTO>> getAllDestinos() {
+        List<DestinoDTO> destinos = destinoService.listarDestinos();
         return new ResponseEntity<>(destinos, HttpStatus.OK);
     }
 
     @GetMapping("/pesquisar")
-    public ResponseEntity<List<Destino>> getDestinoByNameOrLocation(
+    public ResponseEntity<List<DestinoDTO>> getDestinoByNameOrLocation(
         @RequestParam(required = false) String nome,
         @RequestParam(required = false) String localizacao
         ) {
-        List<Destino> resultados = destinoService.pesquisarDestinos(nome, localizacao);
+        List<DestinoDTO> resultados = destinoService.pesquisarDestinos(nome, localizacao);
         return ResponseEntity.ok(resultados);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Destino> getDestinoById(@PathVariable Long id) {
-        Destino destino = destinoService.obterDetalhes(id);
+    public ResponseEntity<DestinoDTO> getDestinoById(@PathVariable Long id) {
+        DestinoDTO destino = destinoService.obterDetalhes(id);
         if (destino == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -56,8 +56,8 @@ public class DestinoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Destino> rateDestino(@PathVariable Long id, @RequestParam int nota) {
-        Destino destino = destinoService.avaliarDestino(id, nota);
+    public ResponseEntity<DestinoDTO> rateDestino(@PathVariable Long id, @RequestParam int nota) {
+        DestinoDTO destino = destinoService.avaliarDestino(id, nota);
         if (destino == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
