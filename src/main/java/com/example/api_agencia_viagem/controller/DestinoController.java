@@ -1,72 +1,74 @@
 package com.example.api_agencia_viagem.controller;
 
-import java.util.List;
-
+import com.example.api_agencia_viagem.dominio.entity.DestinoEntity;
+import com.example.api_agencia_viagem.repository.DestinoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.api_agencia_viagem.dominio.dto.DestinoDTO;
-import com.example.api_agencia_viagem.service.DestinoService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/destinos")
 public class DestinoController {
 
     @Autowired
-    private DestinoService destinoService;
+    private DestinoRepository destinoRepository;
 
     @PostMapping
-    public ResponseEntity<DestinoDTO> createDestino(@RequestBody DestinoDTO destino) {
-        DestinoDTO novoDestino = destinoService.cadastrarDestino(destino);
+    public ResponseEntity<DestinoEntity> createDestino(@RequestBody DestinoEntity destino) {
+        DestinoEntity novoDestino = destinoRepository.save(destino);
         return new ResponseEntity<>(novoDestino, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<DestinoDTO>> getAllDestinos() {
-        List<DestinoDTO> destinos = destinoService.listarDestinos();
+    public ResponseEntity<List<DestinoEntity>> getAllDestinos() {
+        List<DestinoEntity> destinos = destinoRepository.findAll();
         return new ResponseEntity<>(destinos, HttpStatus.OK);
     }
 
     @GetMapping("/pesquisar")
-    public ResponseEntity<List<DestinoDTO>> getDestinoByNameOrLocation(
-        @RequestParam(required = false) String nome,
-        @RequestParam(required = false) String localizacao
-        ) {
-        List<DestinoDTO> resultados = destinoService.pesquisarDestinos(nome, localizacao);
+    public ResponseEntity<List<DestinoEntity>> getDestinoByNameOrLocation(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String localizacao) {
+
+        List<DestinoEntity> resultados = destinoRepository.findByNomeContainingIgnoreCaseOrLocalizacaoContainingIgnoreCase(nome, localizacao);
         return ResponseEntity.ok(resultados);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DestinoDTO> getDestinoById(@PathVariable Long id) {
-        DestinoDTO destino = destinoService.obterDetalhes(id);
-        if (destino == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(destino, HttpStatus.OK);
+    public ResponseEntity<DestinoEntity> getDestinoById(@PathVariable Long id) {
+        return destinoRepository.findById(id)
+                .map(destino -> new ResponseEntity<>(destino, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<DestinoDTO> rateDestino(@PathVariable Long id, @RequestParam int nota) {
-        DestinoDTO destino = destinoService.avaliarDestino(id, nota);
-        if (destino == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PatchMapping("/{id}/avaliar")
+    public ResponseEntity<DestinoEntity> rateDestino(@PathVariable Long id, @RequestParam int nota) {
+        if (nota < 1 || nota > 10) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(destino);
+
+        return destinoRepository.findById(id)
+                .map(destino -> {
+                    double totalNotas = destino.getMediaAvaliacoes() * destino.getQuantidadeAvaliacoes();
+                    totalNotas += nota;
+                    destino.setQuantidadeAvaliacoes(destino.getQuantidadeAvaliacoes() + 1);
+                    destino.setMediaAvaliacoes(totalNotas / destino.getQuantidadeAvaliacoes());
+                    DestinoEntity destinoAtualizado = destinoRepository.save(destino);
+                    return new ResponseEntity<>(destinoAtualizado, HttpStatus.OK);
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    // 6. Excluir um destino
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDestinoById(@PathVariable Long id) {
-        destinoService.excluirDestino(id);
+        if (!destinoRepository.existsById(id)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        destinoRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
