@@ -19,6 +19,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String senha;
 
+    @Column(nullable = false)
+    private String role;
+
     public Long getId() {
         return id;
     }
@@ -45,5 +48,12 @@ public class UserEntity {
     }
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
     }
 }
